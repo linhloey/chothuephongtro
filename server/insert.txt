@@ -1,0 +1,20 @@
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("PT","Phòng trọ","Kênh thông tin Phòng Trọ số 1 Việt Nam","Cho thuê phòng trọ - Kênh thông tin số 1 về phòng trọ giá rẻ, phòng trọ sinh viên, phòng trọ cao cấp mới nhất năm 2025. Tất cả phòng trọ cho thuê giá tốt nhất tại Việt Nam.", "/", current_timestamp, current_timestamp);
+
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("NNC","Nhà nguyên căn","Cho Thuê Nhà Nguyên Căn, Giá Rẻ, Chính Chủ, Mới Nhất 2025","Cho thuê nhà nguyên căn - Kênh đăng tin cho thuê nhà số 1: giá rẻ, chính chủ, miễn trung gian, đầy đủ tiện nghi. Cho thuê nhà nguyên căn với nhiều mức giá, diện tích cho thuê khác nhau", "/nha-nguyen-can", current_timestamp, current_timestamp);
+
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("CHCC","Căn hộ chung cư","Cho Thuê Căn Hộ Chung Cư, Giá Rẻ, View Đẹp, Mới Nhất 2025","Cho thuê căn hộ - Kênh đăng tin cho thuê căn hộ số 1: giá rẻ, chính chủ, đầy đủ tiện nghi. Cho thuê căn hộ chung cư với nhiều mức giá, diện tích cho thuê khác nhau", "/can-ho-chung-cu", current_timestamp, current_timestamp);
+
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("CHMN","Căn hộ mini","Cho Thuê Căn Hộ Mini + Chung Cư Mini Giá Rẻ, Mới Nhất 2025","Cho thuê căn hộ - Kênh đăng tin cho thuê căn hộ số 1: giá rẻ, chính chủ, đầy đủ tiện nghi. Cho thuê căn hộ mini, chung cư mini với nhiều mức giá, diện tích cho thuê khác nhau", "/can-ho-mini", current_timestamp, current_timestamp);
+
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("CHDV","Căn hộ dịch vụ","Cho Thuê Căn Hộ Dịch Vụ, Giá Rẻ, Mới Nhất 2025","Cho thuê căn hộ - Kênh đăng tin cho thuê căn hộ số 1: giá rẻ, chính chủ, đầy đủ tiện nghi. Cho thuê căn hộ dịch vụ với nhiều mức giá, diện tích cho thuê khác nhau", "/can-ho-dich-vu", current_timestamp, current_timestamp);
+
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("OG","Ở ghép","Tìm Người Ở Ghép, Tìm Nam Ở Ghép, Tìm Nữ Ở Ghép, Mới Nhất 2025","Tìm người ở ghép - Kênh đăng tin tìm người ở ghép số 1: giá rẻ, đầy đủ tiện nghi. Tìm người ở ghép với nhiều mức giá, diện tích khác nhau", "/o-ghep", current_timestamp, current_timestamp);
+
+INSERT INTO categories (code, value, header, subheader, path, createdAt, updatedAt) 
+VALUES ("MB","Mặt bằng","Cho Thuê Mặt Bằng, Giá Rẻ, Chính Chủ, Mới Nhất 2025","Cho thuê mặt bằng - Kênh đăng tin cho thuê mặt bằng số 1: giá rẻ, chính chủ. Cho thuê mặt bằng với nhiều mức giá, diện tích cho thuê khác nhau", "/mat-bang", current_timestamp, current_timestamp);
