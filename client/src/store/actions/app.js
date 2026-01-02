@@ -6,12 +6,12 @@ export const getCategories = () => async (dispatch) => {
         const response = await apis.apiGetCategories()
         if (response?.data.err === 0) {
             dispatch({
-                type: actionTypes.GET_CATEFORIES,
+                type: actionTypes.GET_CATEGORIES,
                 categories: response.data.response
             })
         } else {
             dispatch({
-                type: actionTypes.GET_CATEFORIES,
+                type: actionTypes.GET_CATEGORIES,
                 msg: response.data.msg,
                 categories: null
             })
@@ -19,7 +19,7 @@ export const getCategories = () => async (dispatch) => {
 
     } catch (error) {
         dispatch({
-            type: actionTypes.GET_CATEFORIES,
+            type: actionTypes.GET_CATEGORIES,
             categories: null
         })
     }

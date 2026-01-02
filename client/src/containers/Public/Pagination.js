@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { PageNumber } from '../../components'
 import { useSelector } from 'react-redux'
 import icons from '../../ultils/icons'
@@ -6,48 +6,73 @@ import { useSearchParams } from 'react-router-dom'
 
 const { GrLinkNext, GrLinkPrevious } = icons
 
-const Pagination = ({ page }) => {
+const Pagination = ({ }) => {
     const { count, posts } = useSelector(state => state.post)
     const [arrPage, setArrPage] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
-    const [isHideEnd, setIsHideEnd] = useState(false)
-    const [isHideStart, setisHideStart] = useState(false)
     const [searchParams] = useSearchParams()
+
+    const maxPage = useMemo(() => {
+        const limit = +process.env.REACT_APP_LIMIT_POSTS || 10
+        return Math.ceil(count / limit)
+    }, [count])
 
     useEffect(() => {
         let page = searchParams.get('page')
-        page && +page !== currentPage && setCurrentPage(+page)
-        !page && setCurrentPage(1)
-    },[searchParams])
+        if (page && +page !== currentPage) setCurrentPage(+page)
+        if (!page) setCurrentPage(1)
+    }, [searchParams])
 
     useEffect(() => {
-        let maxPage = Math.ceil(count / process.env.REACT_APP_LIMIT_POSTS)
-        let end = (currentPage + 1) > maxPage ? maxPage : (currentPage + 1)
-        let start = (currentPage - 1) < 1 ? 1 : (currentPage - 1)
-        let temp = []
-        for( let i = start; i <= end; i++) temp.push(i)
-        setArrPage(temp)
-        currentPage >= (maxPage - 1) ? setIsHideEnd(true) : setIsHideEnd(false)
-        currentPage <= 2 ? setisHideStart(true) : setisHideStart(false) 
+        let start = Math.max(currentPage - 1, 1)
+        let end = Math.min(currentPage + 1, maxPage)
 
-    }, [count, posts, currentPage])
+        if (currentPage === 1) end = Math.min(3, maxPage)
+        if (currentPage === maxPage) start = Math.max(maxPage - 2, 1)
+
+        let temp = []
+        for (let i = start; i <= end; i++) temp.push(i)
+        setArrPage(temp)
+    }, [maxPage, currentPage])
 
     return  (
         <div className='flex items-center justify-center gap-2 py-5'>
-            {!isHideStart && <PageNumber icon={<GrLinkPrevious />} setCurrentPage={setCurrentPage} text={1} />}
-            {!isHideStart && <PageNumber text={'...'} />}
-            {arrPage.length > 0 && arrPage.map(item => {
-                return (
-                    <PageNumber 
-                        key={item} 
-                        text={item} 
-                        setCurrentPage={setCurrentPage}
-                        currentPage={currentPage}
-                    />
-                )
-            })}
-            {!isHideEnd && <PageNumber text={'...'} />}
-            {!isHideEnd && <PageNumber icon={<GrLinkNext />} setCurrentPage={setCurrentPage} text={Math.ceil(count / posts.length)} />}
+            {currentPage > 1 && (
+                <PageNumber 
+                    icon={<GrLinkPrevious size={20} />} 
+                    text={1} 
+                    setCurrentPage={setCurrentPage} 
+                />
+            )}
+
+            {currentPage > 2 && (
+                <>
+                    {currentPage > 3 && <PageNumber text={'...'} />}
+                </>
+            )}
+
+            {arrPage.length > 0 && arrPage.map(item => (
+                <PageNumber 
+                    key={item} 
+                    text={item} 
+                    setCurrentPage={setCurrentPage}
+                    currentPage={currentPage}
+                />
+            ))}
+
+            {currentPage < maxPage - 1 && (
+                <>
+                    {currentPage < maxPage - 2 && <PageNumber text={'...'} />}
+                </>
+            )}
+
+            {currentPage < maxPage && (
+                <PageNumber 
+                    icon={<GrLinkNext size={20} />} 
+                    text={maxPage} 
+                    setCurrentPage={setCurrentPage} 
+                />
+            )}
         </div>
     )
 }

@@ -1,23 +1,20 @@
 import React, { useEffect, useRef } from 'react'
 import { Button, Item } from '../../components'
-import { getPosts, getPostsLimit } from '../../store/actions/post'
+import { getPostsLimit } from '../../store/actions/post'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 
-const List = () => {
+const List = ({categoryCode}) => {
   const dispatch = useDispatch()
   const [searchParams] = useSearchParams()
   const { posts } = useSelector(state => state.post)
 
   useEffect(() => {
-    let params = []
-    for (let entry of searchParams.entries()) {
-      params.push(entry);
-    }
-    let searchParamsObject = {}
-    params?.map(i => { searchParamsObject = { ...searchParamsObject, [i[0]]: i[1] }})
-    dispatch(getPostsLimit(searchParamsObject))
-  }, [searchParams])
+    let paramsObj = Object.fromEntries([...searchParams])
+    if (categoryCode) paramsObj.categoryCode = categoryCode
+    dispatch(getPostsLimit(paramsObj))
+  }, [searchParams, categoryCode])
+
   return (
     <div className='w-full p-2 bg-white shadow-md rounded-md px-5'>
       <div className='flex items-center justify-between my-3'>
@@ -31,8 +28,8 @@ const List = () => {
       <div className='items'>
         {posts?.length > 0 && posts.map(item => {
           return (
-            <Item 
-              key={item?.id} 
+            <Item
+              key={item?.id}
               attributes={item?.attributes}
               description={JSON.parse(item?.description)}
               images={JSON.parse(item?.images?.image)}

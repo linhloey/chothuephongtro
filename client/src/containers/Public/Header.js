@@ -61,10 +61,11 @@ const Header = () => {
             />
           </div>}
           <Button 
-            text={'Đăng tin mới'} 
-            textColor='text-white' 
-            bgColor='bg-secondary2' 
-            IcAfter={AiOutlinePlusCircle}
+              text={'Đăng tin mới'} 
+              textColor='text-white' 
+              bgColor='bg-secondary2' 
+              IcAfter={AiOutlinePlusCircle}
+              onClick={() => navigate(isLoggedIn ? '/he-thong/tao-moi-bai-dang' : path.LOGIN)}
           />
         </div>
       </div>

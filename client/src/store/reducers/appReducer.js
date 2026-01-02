@@ -8,7 +8,7 @@ const initState = {
 
 const appReducer = (state = initState, action) => {
     switch (action.type) {
-        case actionTypes.GET_CATEFORIES:
+        case actionTypes.GET_CATEGORIES:
             return {
                 ...state,
                 categories: action.categories || [],
