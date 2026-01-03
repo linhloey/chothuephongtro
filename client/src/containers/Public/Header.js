@@ -18,7 +18,7 @@ const Header = () => {
   const [searchParams] = useSearchParams()
   const headerRef = useRef()
 
-  const { isLoggedIn} = useSelector(state => state.auth)
+  const { isLoggedIn, token } = useSelector(state => state.auth)
   const { userData } = useSelector(state => state.user)
 
   const goLogin = useCallback((flag) => {
@@ -28,6 +28,17 @@ const Header = () => {
   useEffect(() => {
     headerRef.current.scrollIntoView({behavior: 'smooth', block: 'start'}) //Moi lan chuyen trang se scroll len lai Header o tren cung
   },[searchParams.get('page')])
+
+  useEffect(() => {
+    const isUserDataEmpty = !userData || Object.keys(userData).length === 0;
+
+    if (isLoggedIn && token?.length > 30 && isUserDataEmpty) {
+        const delay = setTimeout(() => {
+            dispatch(actions.getCurrentUser(token));
+        }, 100);
+        return () => clearTimeout(delay); 
+    }
+}, [isLoggedIn, token, userData]);
 
   return (
     <div ref={headerRef} className='w-3/5'>

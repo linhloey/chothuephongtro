@@ -1,28 +1,19 @@
-import actionTypes from './actionTypes'
-import { apiGetCurrent } from '../../services/user' // Đảm bảo import đúng hàm này
+import * as apis from '../../services'
 
-export const getCurrentUser = () => async (dispatch) => {
+export const getCurrentUser = (persistToken) => async (dispatch) => {
     try {
-        const response = await apiGetCurrent()
+        const response = await apis.apiGetCurrent(persistToken)
+        console.log('Check response API:', response)
         if (response?.data.err === 0) {
             dispatch({
-                type: actionTypes.GET_CURRENT,
+                type: 'GET_CURRENT',
                 data: response.data.response
             })
         } else {
-            // Nếu token hết hạn (Server trả về err != 0)
-            dispatch({
-                type: actionTypes.GET_CURRENT,
-                data: null
-            })
-            // Tự động logout nếu không lấy được user (do token hỏng/hết hạn)
-            dispatch({ type: actionTypes.LOGOUT })
+            dispatch({ type: 'GET_CURRENT', data: null })
         }
     } catch (error) {
-        dispatch({
-            type: actionTypes.GET_CURRENT,
-            data: null
-        })
-        dispatch({ type: actionTypes.LOGOUT })
+        dispatch({ type: 'GET_CURRENT', data: null })
+        console.log('Lỗi action getCurrentUser:', error)
     }
 }

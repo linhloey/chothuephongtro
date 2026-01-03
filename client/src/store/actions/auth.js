@@ -1,5 +1,6 @@
 import actionTypes from './actionTypes'
 import { apiRegister, apiLogin } from '../../services/auth'
+import { getCurrentUser } from './user'
 
 export const register = (payload) => async (dispatch) => {
     try {
