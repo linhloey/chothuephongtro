@@ -1,5 +1,6 @@
 import { Routes, Route} from 'react-router-dom'
-import { Home, Login,HomePage,Collection, RentalHouse, RentalRoom, DetailPost} from './containers/Public'
+import { Home, Login,HomePage,Collection, DetailPost} from './containers/Public'
+import { System, Profile } from './containers/System'
 import { path} from './ultils/constant'
 
 function App() {
@@ -8,7 +9,6 @@ function App() {
       <Routes>
         <Route path={path.HOME} element={<Home />} >
           <Route index element={<HomePage />} />
-
           <Route path={path.LOGIN} element={<Login />} />
           
           <Route path={path.PHONG_TRO} element={<Collection />}/>
@@ -21,6 +21,9 @@ function App() {
 
           <Route path={path.DETAIL_POST__TITLE__POSTID} element={<DetailPost />} />
           <Route path={'chi-tiet/*'} element={<DetailPost />} />
+        </Route>
+        <Route path={path.SYSTEM} element={<System />}>
+          <Route path={path.THONG_TIN_CA_NHAN} element={<Profile />} />
         </Route>
       </Routes>
     </div>

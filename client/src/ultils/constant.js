@@ -13,7 +13,9 @@ export const path = {
     CAN_HO_DICH_VU: 'can-ho-dich-vu',
     O_GHEP: 'o-ghep',
     MAT_BANG: 'mat-bang',
-    DETAIL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId'
+    DETAIL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId',
+    THONG_TIN_CA_NHAN: 'thong-tin-ca-nhan',
+    SYSTEM: 'he-thong'
 }
 
 export const text = {

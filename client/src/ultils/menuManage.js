@@ -18,13 +18,13 @@ const menuManage = [
     {
         id: 3,
         value: 'Thông tin cá nhân',
-        path: '/he-thong/sua-thong-tin-ca-nhan',
+        path: '/he-thong/thong-tin-ca-nhan',
         icon: <BiUserPin size={18} />
     },
     {
         id: 4,
         value: 'Tin đã lưu',
-        path: '/tin-da-luu',
+        path: '/he-thong/tin-da-luu',
         icon: <AiOutlineHeart size={18} />
     },
 ]

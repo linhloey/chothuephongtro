@@ -17,3 +17,18 @@ export const getCurrentUser = (persistToken) => async (dispatch) => {
         console.log('Lỗi action getCurrentUser:', error)
     }
 }
+
+export const updateUser = (payload) => async (dispatch) => {
+    try {
+        const response = await apis.apiUpdateUser(payload) 
+        if (response?.data.err === 0) {
+            dispatch(getCurrentUser())
+            return true
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}

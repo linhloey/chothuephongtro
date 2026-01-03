@@ -1,4 +1,3 @@
-
 export const formatVNToString = (keyword) => {
   return keyword
     .toLowerCase()
