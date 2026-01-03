@@ -11,7 +11,6 @@ const Collection = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const [categoryCurrent, setCategoryCurrent] = useState({})
-  const [categoryCode, setCategoryCode] = useState('all')
 
   useEffect(() => {
       const category = categories?.find(item => item.path === location.pathname)
