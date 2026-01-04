@@ -1,4 +1,4 @@
-import { AiOutlinePlusCircle, AiOutlineHeart, AiOutlineLogout } from 'react-icons/ai'
+import { AiOutlinePlusCircle, AiOutlineUser, AiOutlineUsergroupAdd, AiOutlineHeart, AiOutlineLogout } from 'react-icons/ai'
 import { GrNext, GrStar, GrLinkNext, GrLinkPrevious } from 'react-icons/gr'
 import { BsChevronRight, BsBookmarkStarFill, BsPostcard } from 'react-icons/bs'
 import { HiOutlineLocationMarker } from 'react-icons/hi'
@@ -27,7 +27,9 @@ const icons = {
     AiOutlineLogout,
     MdOutlineLibraryBooks,
     BiUserPin,
-    BsPostcard
+    BsPostcard,
+    AiOutlineUsergroupAdd,
+    AiOutlineUser
 }
 
 export default icons

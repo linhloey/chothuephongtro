@@ -18,3 +18,15 @@ export const apiUpdateUser = (payload) => axiosConfig({
     url: '/api/v1/user/update-user',
     data: payload
 })
+
+export const apiGetAllUsers = () => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'get',
+            url: '/api/v1/user/get-all-users',
+        })
+        resolve(response)
+    } catch (error) {
+        reject(error)
+    }
+})

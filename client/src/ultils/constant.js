@@ -15,7 +15,8 @@ export const path = {
     MAT_BANG: 'mat-bang',
     DETAIL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId',
     THONG_TIN_CA_NHAN: 'thong-tin-ca-nhan',
-    SYSTEM: 'he-thong'
+    SYSTEM: 'he-thong',
+    QUAN_LY_NGUOI_DUNG: 'quan-ly-nguoi-dung'
 }
 
 export const text = {

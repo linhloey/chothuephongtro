@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     avatar: DataTypes.STRING,
     post: DataTypes.STRING,
     join: DataTypes.STRING,
+    roleCode: {
+        type: DataTypes.STRING,
+        defaultValue: 'R3'
+    }
   }, {
     sequelize,
     modelName: 'User',

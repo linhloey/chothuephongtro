@@ -32,3 +32,19 @@ export const updateUser = (payload) => async (dispatch) => {
         return false
     }
 }
+
+export const getAllUsers = () => async (dispatch) => {
+    try {
+        const response = await apis.apiGetAllUsers()
+        if (response?.data.err === 0) {
+            dispatch({
+                type: 'GET_ALL_USERS',
+                users: response.data.users
+            })
+        } else {
+            dispatch({ type: 'GET_ALL_USERS', users: [] })
+        }
+    } catch (error) {
+        dispatch({ type: 'GET_ALL_USERS', users: [] })
+    }
+}

@@ -76,7 +76,6 @@ const Profile = () => {
                             alt="avatar" 
                             className='w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg' 
                         />
-                        {/* Nút bấm chọn ảnh đè lên avatar */}
                         <label 
                             htmlFor="avatar" 
                             className='absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity duration-300'
@@ -85,7 +84,6 @@ const Profile = () => {
                         </label>
                     </div>
                     
-                    {/* Input file ẩn đi */}
                     <input 
                         type="file"
                         id="avatar"

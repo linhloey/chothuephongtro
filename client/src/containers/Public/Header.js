@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
 import menuManage from '../../ultils/menuManage'
 
-const { AiOutlinePlusCircle, GrNext, AiOutlineLogout} = icons
+const { AiOutlinePlusCircle, GrNext, AiOutlineLogout, AiOutlineUsergroupAdd, MdOutlineLibraryBooks } = icons
 
 const Header = () => {
   const navigate = useNavigate()
@@ -23,7 +23,7 @@ const Header = () => {
 
   const goLogin = useCallback((flag) => {
     navigate(path.LOGIN, {state: { flag } })
-  },[])
+  },[navigate])
 
   useEffect(() => {
     headerRef.current.scrollIntoView({behavior: 'smooth', block: 'start'}) //Moi lan chuyen trang se scroll len lai Header o tren cung
@@ -79,6 +79,7 @@ const Header = () => {
                   />
                   {isShowMenu && (
                     <div className='absolute right-0 top-full bg-white shadow-lg border rounded-md min-w-[200px] flex flex-col z-50 mt-2 py-2 text-black'>
+                      {/* Cac muc chung cho tat ca user */}
                       {menuManage.map(item => (
                         <Link 
                             key={item.id} 
@@ -90,6 +91,30 @@ const Header = () => {
                             <span className='text-sm'>{item.value}</span>
                         </Link>
                       ))}
+                      {/* Cac muc them cho Admin */}
+                      {userData?.roleCode === 'R1' && (
+                          <>
+                            <div className='px-4 py-2 text-[11px] font-bold text-blue-600 uppercase bg-blue-50'>
+                                Quản trị hệ thống
+                            </div>
+                            <Link
+                                to='/he-thong/quan-ly-nguoi-dung'
+                                className='px-4 py-2 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-50'
+                                onClick={() => setIsShowMenu(false)}
+                            >
+                                <AiOutlineUsergroupAdd size={18} />
+                                <span className='text-sm'>Quản lý người dùng</span>
+                            </Link>
+                            <Link
+                                to='/he-thong/quan-ly-tat-ca-bai-dang'
+                                className='px-4 py-2 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-50'
+                                onClick={() => setIsShowMenu(false)}
+                            >
+                                <MdOutlineLibraryBooks size={18} />
+                                <span className='text-sm'>Quản lý tất cả tin</span>
+                            </Link>
+                          </>
+                      )}
                       <div 
                         className='px-4 py-2 hover:bg-gray-100 flex items-center gap-2 cursor-pointer text-red-600'
                         onClick={() => {

@@ -1,6 +1,6 @@
 import { Routes, Route} from 'react-router-dom'
 import { Home, Login,HomePage,Collection, DetailPost} from './containers/Public'
-import { System, Profile } from './containers/System'
+import { System, Profile, ManageUser } from './containers/System'
 import { path} from './ultils/constant'
 
 function App() {
@@ -24,6 +24,7 @@ function App() {
         </Route>
         <Route path={path.SYSTEM} element={<System />}>
           <Route path={path.THONG_TIN_CA_NHAN} element={<Profile />} />
+          <Route path={path.QUAN_LY_NGUOI_DUNG} element={<ManageUser />} />
         </Route>
       </Routes>
     </div>
