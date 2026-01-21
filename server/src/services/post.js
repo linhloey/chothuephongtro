@@ -27,28 +27,36 @@ export const getPostsService = () => new Promise(async(resolve, reject) => {
     }
 });
 
-export const getPostsLimitService = (page, query) => new Promise(async(resolve, reject) => {
-    try {      
-        let offset = (!page || +page <= 1) ? 0 : (+page-1)
+export const getPostsLimitService = (page, query) => new Promise(async (resolve, reject) => {
+    try {
+        const { order, ...filters } = query;
+        let offset = (!page || +page <= 1) ? 0 : (+page - 1);
+
+        const sqlOrder = order === 'createdAt' 
+            ? [['createdAt', 'DESC']] 
+            : [['id', 'DESC']];
+
         const response = await db.Post.findAndCountAll({
-            where: query,
+            where: filters, 
             raw: true,
             nest: true,
             offset: offset * +process.env.LIMIT,
             limit: +process.env.LIMIT,
+            order: sqlOrder, 
             include: [
-                {model: db.Image, as: 'images', attributes: ['image']},
-                {model: db.Attribute, as: 'attributes', attributes: ['price', 'acreage', 'published']},
-                {model: db.User, as: 'user', attributes: ['name', 'phone','zalo']},
-                {model: db.Overview, as: 'overview', attributes: ['address']},
+                { model: db.Image, as: 'images', attributes: ['image'] },
+                { model: db.Attribute, as: 'attributes', attributes: ['price', 'acreage', 'published'] },
+                { model: db.User, as: 'user', attributes: ['name', 'phone', 'zalo'] },
+                { model: db.Overview, as: 'overview', attributes: ['address'] },
             ],
-            attributes: ['id', 'title', 'star', 'description'],
+            attributes: ['id', 'title', 'star', 'description', 'createdAt'], // Thêm createdAt để kiểm tra nếu cần
         });
+
         resolve({
             err: response ? 0 : 1,
             msg: response ? 'Get posts successfully' : 'Cannot get posts',
             response,
-        })
+        });
     } catch (error) {
         reject(error);
     }
@@ -125,17 +133,22 @@ export const getPostsAdminService = () => new Promise(async (resolve, reject) =>
     } catch (error) { reject(error) }
 })
 
-export const deletePostService = (postId) => new Promise(async (resolve, reject) => {
+export const deletePostService = (postId, userId, roleCode) => new Promise(async (resolve, reject) => {
     try {
+        const condition = roleCode === 'R1' ? { id: postId } : { id: postId, userId }
+
         const response = await db.Post.destroy({
-            where: { id: postId }
-        })
+            where: condition
+        });
+
         resolve({
             err: response > 0 ? 0 : 1,
-            msg: response > 0 ? 'Xóa bài đăng thành công' : 'Không tìm thấy bài đăng hoặc đã bị xóa trước đó',
-        })
-    } catch (error) { reject(error) }
-})
+            msg: response > 0 ? 'Xóa bài đăng thành công' : 'Không tìm thấy bài hoặc bạn không có quyền xóa bài này',
+        });
+    } catch (error) {
+        reject(error);
+    }
+});
 
 export const createNewPostService = (body) => new Promise(async (resolve, reject) => {
     try {
@@ -221,6 +234,59 @@ export const createNewPostService = (body) => new Promise(async (resolve, reject
 
     } catch (error) {
         console.log(error)
+        reject(error)
+    }
+})
+
+// Thêm tham số userId vào hàm
+export const getPostsUserService = (page, query, userId) => new Promise(async (resolve, reject) => {
+    try {
+        let offset = (!page || +page <= 1) ? 0 : (+page - 1);
+        const response = await db.Post.findAndCountAll({
+            // Quan trọng: Kết hợp filter từ query và userId của người dùng
+            where: { ...query, userId }, 
+            raw: true,
+            nest: true,
+            offset: offset * +process.env.LIMIT,
+            limit: +process.env.LIMIT,
+            order: [['createdAt', 'DESC']],
+            include: [
+                { model: db.Image, as: 'images', attributes: ['image'] },
+                { model: db.Attribute, as: 'attributes', attributes: ['price', 'acreage', 'published'] },
+                { model: db.User, as: 'user', attributes: ['name', 'phone', 'zalo'] },
+                { model: db.Overview, as: 'overview' },
+            ],
+        });
+        resolve({
+            err: response ? 0 : 1,
+            msg: response ? 'OK' : 'Không thể lấy danh sách bài đăng.',
+            response,
+        });
+    } catch (error) {
+        reject(error);
+    }
+});
+
+export const updatePostService = ({ postId, ...payload }, userId, roleCode) => new Promise(async (resolve, reject) => {
+    try {
+        // CHẶN ADMIN: Nếu roleCode là R1 (Admin), trả về lỗi ngay lập tức
+        if (roleCode === 'R1') {
+            return resolve({
+                err: 1,
+                msg: 'Admin chỉ có quyền xóa, không có quyền sửa nội dung bài đăng của người dùng.'
+            })
+        }
+
+        // Với User bình thường (R2): Chỉ cho phép sửa bài của chính mình
+        const response = await db.Post.update(payload, {
+            where: { id: postId, userId } // Bắt buộc phải khớp cả ID bài và ID người đăng
+        })
+
+        resolve({
+            err: response[0] > 0 ? 0 : 1,
+            msg: response[0] > 0 ? 'Cập nhật thành công' : 'Bạn không có quyền sửa bài này hoặc bài đăng không tồn tại.'
+        })
+    } catch (error) {
         reject(error)
     }
 })

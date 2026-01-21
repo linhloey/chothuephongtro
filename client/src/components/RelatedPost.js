@@ -19,6 +19,7 @@ const RelatedPost = () => {
                     return (
                         <Sitem 
                             key={item.id}
+                            id={item.id}
                             title={item.title}
                             price={item.attributes?.price}
                             createdAt={item.createdAt}

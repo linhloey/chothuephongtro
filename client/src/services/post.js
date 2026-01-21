@@ -53,7 +53,8 @@ export const apiGetPostsAdmin = () => axiosConfig({
 
 export const apiDeletePost = (postId) => axiosConfig({
     method: 'delete',
-    url: `/api/v1/post/admin-delete/${postId}`
+    url: '/api/v1/post/delete-post',
+    params: { postId } 
 })
 
 export const apiCreatePost = (payload) => new Promise(async (resolve, reject) => {
@@ -68,3 +69,16 @@ export const apiCreatePost = (payload) => new Promise(async (resolve, reject) =>
         reject(error)
     }
 })
+
+export const apiGetPostsUser = (query) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'get',
+            url: `/api/v1/post/user-all`, // Đảm bảo route này khớp với BE
+            params: query
+        });
+        resolve(response);
+    } catch (error) {
+        reject(error);
+    }
+});

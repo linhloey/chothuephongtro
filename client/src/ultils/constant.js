@@ -18,7 +18,8 @@ export const path = {
     SYSTEM: 'he-thong',
     QUAN_LY_NGUOI_DUNG: 'quan-ly-nguoi-dung',
     QUAN_LY_TAT_CA_BAI_DANG: 'quan-ly-tat-ca-bai-dang',
-    TAO_MOI_BAI_DANG: 'tao-moi-bai-dang'
+    TAO_MOI_BAI_DANG: 'tao-moi-bai-dang',
+    QUAN_LY_BAI_DANG: 'quan-ly-bai-dang'
 }
 
 export const text = {

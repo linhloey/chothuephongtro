@@ -10,7 +10,8 @@ router.get('/limit', postController.getPostsLimit);
 router.get('/new-post', postController.getNewPosts);
 router.get('/detail', postController.getOnePost);
 router.get('/admin-all', verifyToken, isAdmin, postController.getPostsAdmin)
-router.delete('/admin-delete/:postId', verifyToken, isAdmin, postController.deletePost)
+router.get('/user-all', verifyToken, postController.getPostsUser)
+router.delete('/delete-post', verifyToken, postController.deletePost)
 router.post('/create-new', verifyToken, postController.createNewPost)
 
 export default router;

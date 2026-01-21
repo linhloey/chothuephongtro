@@ -60,16 +60,32 @@ export const getPostsAdmin = async (req, res) => {
     }
 }
 
-export const deletePost = async (req, res) => {
-    const { postId } = req.params
+export const getPostsUser = async (req, res) => {
     try {
-        if (!postId) return res.status(400).json({ err: 1, msg: 'Thiếu mã bài đăng' })
-        const response = await postService.deletePostService(postId)
-        return res.status(200).json(response)
+        const { page, ...query } = req.query;
+        const { id } = req.user; // ID người dùng đăng nhập
+        if (!id) return res.status(400).json({ err: 1, msg: "Thiếu ID người dùng" });
+
+        const response = await postService.getPostsUserService(page, query, id);
+        return res.status(200).json(response);
     } catch (error) {
-        return res.status(500).json({ err: -1, msg: 'Lỗi server: ' + error })
+        return res.status(500).json({ err: -1, msg: 'Lỗi controller: ' + error });
     }
-}
+};
+
+export const deletePost = async (req, res) => {
+    try {
+        const { postId } = req.query; 
+        const { id: userId, roleCode } = req.user; 
+
+        if (!postId) return res.status(400).json({ err: 1, msg: "Thiếu ID bài đăng" });
+
+        const response = await postService.deletePostService(postId, userId, roleCode);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Lỗi controller: ' + error });
+    }
+};
 
 export const createNewPost = async (req, res) => {
     try {

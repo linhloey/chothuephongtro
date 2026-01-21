@@ -5,6 +5,7 @@ import { path} from './ultils/constant'
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import CreatePost from './containers/System/CreatePost';
+import ManagePost from './containers/System/ManagePost';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path={path.QUAN_LY_NGUOI_DUNG} element={<ManageUser />} />
           <Route path={path.QUAN_LY_TAT_CA_BAI_DANG} element={<AdminManagePost />} />
           <Route path={path.TAO_MOI_BAI_DANG} element={<CreatePost />} />
+          <Route path={path.QUAN_LY_BAI_DANG} element={<ManagePost />} />
         </Route>
       </Routes>
     </div>
