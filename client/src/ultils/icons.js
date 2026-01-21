@@ -4,7 +4,7 @@ import { BsChevronRight, BsBookmarkStarFill, BsPostcard } from 'react-icons/bs'
 import { HiOutlineLocationMarker } from 'react-icons/hi'
 import { TbReportMoney } from 'react-icons/tb'
 import { RiCrop2Line, RiHeartFill, RiHeartLine } from 'react-icons/ri'
-import { MdOutlineHouseSiding, MdOutlineLibraryBooks } from 'react-icons/md'
+import { MdOutlineHouseSiding, MdOutlineLibraryBooks, MdOutlineAccessTime } from 'react-icons/md'
 import { FiSearch } from 'react-icons/fi'
 import { BiUserPin } from 'react-icons/bi'
 
@@ -29,7 +29,8 @@ const icons = {
     BiUserPin,
     BsPostcard,
     AiOutlineUsergroupAdd,
-    AiOutlineUser
+    AiOutlineUser,
+    MdOutlineAccessTime,
 }
 
 export default icons

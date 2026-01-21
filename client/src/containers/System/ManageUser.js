@@ -24,8 +24,6 @@ const ManageUser = () => {
             cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Gọi action delete tại đây
-                // dispatch(actions.deleteUser(userId))
                 Swal.fire('Đã xóa!', 'Người dùng đã được gỡ bỏ.', 'success')
             }
         })

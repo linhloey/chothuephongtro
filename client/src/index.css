@@ -6,3 +6,19 @@
     display: inline-block;
     margin-bottom: 5px;
 }
+
+/* Đổi màu mũi tên cho Slider */
+.slick-prev:before, .slick-next:before {
+    color: #333 !important; /* Màu tối để nổi bật trên nền trắng hoặc mờ */
+    font-size: 30px !important;
+}
+
+.slick-prev {
+    left: 15px !important;
+    z-index: 10;
+}
+
+.slick-next {
+    right: 25px !important;
+    z-index: 10;
+}

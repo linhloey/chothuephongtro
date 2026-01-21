@@ -39,3 +39,32 @@ export const apiGetNewPosts = () => new Promise(async(resolve, reject) => {
         reject(error)
     }
 }) 
+
+export const apiGetOnePost = (postId) => axiosConfig({
+    method: 'get',
+    url: `/api/v1/post/detail`,
+    params: { postId }
+})
+
+export const apiGetPostsAdmin = () => axiosConfig({
+    method: 'get',
+    url: '/api/v1/post/admin-all'
+})
+
+export const apiDeletePost = (postId) => axiosConfig({
+    method: 'delete',
+    url: `/api/v1/post/admin-delete/${postId}`
+})
+
+export const apiCreatePost = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/v1/post/create-new',
+            data: payload
+        })
+        resolve(response)
+    } catch (error) {
+        reject(error)
+    }
+})

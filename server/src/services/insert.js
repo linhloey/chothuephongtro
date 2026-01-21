@@ -12,7 +12,7 @@ import generateCode from '../ultis/generateCode'
 import { dataPrice, dataArea } from '../ultis/data.js'
 import { getNumberFromString } from '../ultis/common.js'
 require('dotenv').config()
-const dataBody = canhodichvu.body
+const dataBody = oghep.body
 
 const hashPassword = password => bcrypt.hashSync(password, bcrypt.genSaltSync(12)) //Ham bam mat khau
 
@@ -35,7 +35,7 @@ export const insertService = () => new Promise(async(resolve, reject) => {
                 type: item?.header?.type,
                 labelCode,
                 attributesId,
-                categoryCode: 'CHDV',
+                categoryCode: 'OG',
                 description: desc,
                 userId,
                 overviewId,

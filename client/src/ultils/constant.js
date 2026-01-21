@@ -16,7 +16,9 @@ export const path = {
     DETAIL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId',
     THONG_TIN_CA_NHAN: 'thong-tin-ca-nhan',
     SYSTEM: 'he-thong',
-    QUAN_LY_NGUOI_DUNG: 'quan-ly-nguoi-dung'
+    QUAN_LY_NGUOI_DUNG: 'quan-ly-nguoi-dung',
+    QUAN_LY_TAT_CA_BAI_DANG: 'quan-ly-tat-ca-bai-dang',
+    TAO_MOI_BAI_DANG: 'tao-moi-bai-dang'
 }
 
 export const text = {

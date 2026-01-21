@@ -1,4 +1,5 @@
 import * as postService from '../services/post.js';
+import { v4 } from 'uuid'
 
 export const getPosts = async (req, res) => {
     try {
@@ -36,3 +37,62 @@ export const getNewPosts = async (req, res) => {
         });
     }
 };
+
+export const getOnePost = async (req, res) => {
+    const { postId } = req.query
+    try {
+        const response = await postService.getOnePostService(postId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({ 
+            err: -1, 
+            msg: error.message || 'Fail at post controller' 
+        })
+    }
+}
+
+export const getPostsAdmin = async (req, res) => {
+    try {
+        const response = await postService.getPostsAdminService()
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Lỗi server' })
+    }
+}
+
+export const deletePost = async (req, res) => {
+    const { postId } = req.params
+    try {
+        if (!postId) return res.status(400).json({ err: 1, msg: 'Thiếu mã bài đăng' })
+        const response = await postService.deletePostService(postId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Lỗi server: ' + error })
+    }
+}
+
+export const createNewPost = async (req, res) => {
+    try {
+        const { categoryCode, title, priceNumber, areaNumber, label } = req.body
+        const { id } = req.user // Lấy từ middleware verifyToken gán vào
+
+        // Kiểm tra sơ bộ dữ liệu đầu vào
+        if (!categoryCode || !id || !title || !priceNumber || !areaNumber || !label) {
+            return res.status(400).json({
+                err: 1,
+                msg: 'Thiếu thông tin đầu vào (title, giá, diện tích hoặc danh mục...)'
+            })
+        }
+
+        // Gọi service để xử lý lưu vào DB
+        const response = await postService.createNewPostService(req.body, id)
+        
+        return res.status(200).json(response)
+
+    } catch (error) {
+        return res.status(500).json({
+            err: -1,
+            msg: 'Lỗi tại controller post: ' + error
+        })
+    }
+}
