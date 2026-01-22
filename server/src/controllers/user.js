@@ -43,3 +43,22 @@ export const getAllUsers = async (req, res) => {
         })
     }
 }
+
+export const changePassword = async (req, res) => {
+    try {
+        const { id } = req.user 
+        const { oldPassword, newPassword } = req.body
+
+        if (!oldPassword || !newPassword) return res.status(400).json({
+            err: 1,
+            msg: 'Thiếu thông tin mật khẩu'
+        })
+
+        const response = await services.changePasswordService(id, req.body)
+        
+        return res.status(200).json(response)
+    } catch (error) {
+        console.log("LỖI TẠI CONTROLLER:", error) 
+        return res.status(500).json({ err: -1, msg: 'Lỗi server' })
+    }
+}
