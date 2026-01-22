@@ -3,7 +3,9 @@ const initState = {
   posts: [],
   msg: '',
   count: 0,
-  newPosts: []
+  newPosts: [],
+  savedIds: [],
+  savedPosts: [],
 };
 
 const postReducer = (state = initState, action) => {
@@ -22,6 +24,18 @@ const postReducer = (state = initState, action) => {
                 msg: action.msg || '',
                 newPosts: action.newPosts || []
             };   
+        case 'GET_SAVED_POSTS':
+            return {
+                ...state,
+                savedPosts: action.posts || [], 
+                savedIds: action.posts?.map(item => String(item.postId)) || [],
+                msg: action.msg || ''
+            }
+        case actionTypes.LOGOUT:
+            return {
+                ...state,
+                savedIds: [] 
+            };
         default:
             return state;
     }

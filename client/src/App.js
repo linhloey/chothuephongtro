@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CreatePost from './containers/System/CreatePost';
 import ManagePost from './containers/System/ManagePost';
+import SavedPost from './containers/System/SavedPost';
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
           <Route path={path.O_GHEP} element={<Collection />} />
 
           <Route path={path.DETAIL_POST__TITLE__POSTID} element={<DetailPost />} />
-          <Route path='chi-tiet/:title/:postId' element={<DetailPost />} />
+          <Route path='chi-tiet/:postId' element={<DetailPost />} />
         </Route>
         <Route path={path.SYSTEM} element={<System />}>
           <Route path={path.THONG_TIN_CA_NHAN} element={<Profile />} />
@@ -32,6 +33,7 @@ function App() {
           <Route path={path.QUAN_LY_TAT_CA_BAI_DANG} element={<AdminManagePost />} />
           <Route path={path.TAO_MOI_BAI_DANG} element={<CreatePost />} />
           <Route path={path.QUAN_LY_BAI_DANG} element={<ManagePost />} />
+          <Route path={path.TIN_DA_LUU} element={<SavedPost />} />
         </Route>
       </Routes>
     </div>

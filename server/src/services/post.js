@@ -158,28 +158,23 @@ export const createNewPostService = (body) => new Promise(async (resolve, reject
         const postId = v4()
         const labelCode = body.labelCode
 
-        // 1. XỬ LÝ ĐỊNH DẠNG THỜI GIAN: Thứ 4, 13:05 12/11/2025
         moment.locale('vi')
         const formatVietnameseDate = (dateObj) => {
-            const dayOfWeek = dateObj.format('E'); // Lấy số thứ tự trong tuần (2-7, 8 cho CN)
+            const dayOfWeek = dateObj.format('E'); 
             const dayPrefix = dayOfWeek === '1' ? 'Chủ Nhật' : `Thứ ${parseInt(dayOfWeek) + 1}`;
-            // parseInt(dayOfWeek) + 1 vì moment 'E' trả về 1 (Thứ 2) -> 7 (CN) tùy cấu hình, 
-            // Cách an toàn nhất cho tiếng Việt:
             const days = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
             const dayName = days[dateObj.day()];
             return `${dayName}, ${dateObj.format('HH:mm DD/MM/YYYY')}`;
         };
 
         const currentDate = moment();
-        const finalDate = formatVietnameseDate(currentDate); // Thứ 4, 13:05 12/11/2025
+        const finalDate = formatVietnameseDate(currentDate); 
         const expireDate = formatVietnameseDate(moment(currentDate).add(30, 'days'));
 
-        // 2. Xử lý chuỗi "Hà Nội" (Lọc bỏ chữ "Thành phố" hoặc "Tỉnh")
         const provinceName = body.province 
             ? body.province.replace('Thành phố ', '').replace('Tỉnh ', '') 
             : body.district
 
-        // 3. Tạo Label
         await db.Label.findOrCreate({
             where: { code: labelCode },
             defaults: {
@@ -188,7 +183,6 @@ export const createNewPostService = (body) => new Promise(async (resolve, reject
             }
         })
 
-        // 4. Tạo Post
         await db.Post.create({
             id: postId,
             title: body.title,
@@ -204,7 +198,6 @@ export const createNewPostService = (body) => new Promise(async (resolve, reject
             priceCode: body.priceCode,
         })
 
-        // 5. Tạo các bảng phụ
         await db.Attribute.create({
             id: attributesId,
             price: body.priceString,
@@ -217,14 +210,13 @@ export const createNewPostService = (body) => new Promise(async (resolve, reject
             image: JSON.stringify(body.images)
         })
 
-        // 6. Tạo Overview (Lưu Hà Nội, Address và Ngày tháng đúng định dạng)
         await db.Overview.create({
             id: overviewId,
             code: `#${Math.floor(Math.random() * 100000)}`,
             district: provinceName, 
             address: body.address, 
-            created: finalDate,   // Thứ 4, 13:05 12/11/2025
-            expired: expireDate,  // Thứ..., 13:05 12/12/2025
+            created: finalDate,  
+            expired: expireDate,  
         })
 
         resolve({
@@ -238,7 +230,6 @@ export const createNewPostService = (body) => new Promise(async (resolve, reject
     }
 })
 
-// Thêm tham số userId vào hàm
 export const getPostsUserService = (page, query, userId) => new Promise(async (resolve, reject) => {
     try {
         let offset = (!page || +page <= 1) ? 0 : (+page - 1);
@@ -267,26 +258,83 @@ export const getPostsUserService = (page, query, userId) => new Promise(async (r
     }
 });
 
-export const updatePostService = ({ postId, ...payload }, userId, roleCode) => new Promise(async (resolve, reject) => {
+export const updatePostService = ({ postId, attributesId, imagesId, overviewId, ...body }) => new Promise(async (resolve, reject) => {
     try {
-        // CHẶN ADMIN: Nếu roleCode là R1 (Admin), trả về lỗi ngay lập tức
-        if (roleCode === 'R1') {
-            return resolve({
-                err: 1,
-                msg: 'Admin chỉ có quyền xóa, không có quyền sửa nội dung bài đăng của người dùng.'
-            })
-        }
+        await db.Post.update({
+            title: body.title,
+            labelCode: body.labelCode,
+            categoryCode: body.categoryCode,
+            address: body.address,
+            description: JSON.stringify(body.description),
+        }, { where: { id: postId } });
 
-        // Với User bình thường (R2): Chỉ cho phép sửa bài của chính mình
-        const response = await db.Post.update(payload, {
-            where: { id: postId, userId } // Bắt buộc phải khớp cả ID bài và ID người đăng
-        })
+        await db.Attribute.update({
+            price: body.price,
+            acreage: body.acreage,
+        }, { where: { id: attributesId } });
 
-        resolve({
-            err: response[0] > 0 ? 0 : 1,
-            msg: response[0] > 0 ? 'Cập nhật thành công' : 'Bạn không có quyền sửa bài này hoặc bài đăng không tồn tại.'
-        })
-    } catch (error) {
-        reject(error)
-    }
+        await db.Image.update({
+            image: JSON.stringify(body.images)
+        }, { where: { id: imagesId } });
+
+        await db.Overview.update({
+            area: body.area,
+            type: body.type,
+            target: body.target,
+        }, { where: { id: overviewId } });
+
+        resolve({ err: 0, msg: 'Cập nhật thành công' });
+    } catch (error) { reject(error) }
 })
+
+export const savePostService = (userId, postId) => new Promise(async (resolve, reject) => {
+    try {
+        // Kiểm tra xem user đã lưu bài này chưa
+        const exist = await db.SavePost.findOne({ 
+            where: { userId, postId }, 
+            raw: true 
+        });
+
+        if (exist) {
+            // Nếu đã lưu rồi thì Xóa (Bỏ lưu)
+            await db.SavePost.destroy({ where: { userId, postId } });
+            resolve({ err: 0, msg: 'Đã bỏ lưu tin đăng' });
+        } else {
+            // Nếu chưa lưu thì Thêm mới
+            await db.SavePost.create({ userId, postId });
+            resolve({ err: 0, msg: 'Lưu tin đăng thành công' });
+        }
+    } catch (error) { 
+        reject(error); 
+    }
+});
+
+// Lấy danh sách bài đăng đã lưu của User
+export const getSavedPostsService = (userId) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await db.SavePost.findAll({
+            where: { userId },
+            raw: true,
+            nest: true,
+            include: [
+                { 
+                    model: db.Post, 
+                    as: 'postData', // Phải khớp với "as" trong model SavePost
+                    include: [
+                        { model: db.Image, as: 'images', attributes: ['image'] },
+                        { model: db.Attribute, as: 'attributes', attributes: ['price', 'acreage'] },
+                        { model: db.User, as: 'user', attributes: ['name', 'avatar', 'phone'] },
+                        { model: db.Overview, as: 'overview', attributes: ['address'] }
+                    ]
+                }
+            ]
+        });
+        resolve({ 
+            err: response ? 0 : 1, 
+            msg: response ? 'OK' : 'Không tìm thấy tin đã lưu',
+            response 
+        });
+    } catch (error) { 
+        reject(error); 
+    }
+});

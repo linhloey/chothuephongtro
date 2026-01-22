@@ -12,7 +12,7 @@ const Sitem = ({ title, price, image, createdAt, id }) => {
   }
 
   const handleNavigate = () => {
-    navigate(`/chi-tiet/${formatVNToString(title)}/${id}`)
+    navigate(`/chi-tiet/${id}`)
   }
 
   return (

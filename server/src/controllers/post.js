@@ -112,3 +112,40 @@ export const createNewPost = async (req, res) => {
         })
     }
 }
+
+export const savePost = async (req, res) => {
+    try {
+        const { id: userId } = req.user; // Lấy từ middleware verifyToken
+        const { postId } = req.body;
+        
+        if (!postId) return res.status(400).json({ err: 1, msg: 'Thiếu mã bài đăng (postId)' });
+
+        const response = await postService.savePostService(userId, postId);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Lỗi Controller SavePost: ' + error });
+    }
+};
+
+export const getSavedPosts = async (req, res) => {
+    try {
+        const { id: userId } = req.user;
+        const response = await postService.getSavedPostsService(userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Lỗi Controller GetSavedPosts: ' + error });
+    }
+};
+
+export const updatePost = async (req, res) => {
+    const { postId, attributesId, imagesId, overviewId, ...body } = req.body
+    try {
+        const { id } = req.user 
+        if (!postId || !id) return res.status(400).json({ err: 1, msg: 'Thiếu thông tin' })
+        
+        const response = await postService.updatePostService(req.body)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Lỗi server' })
+    }
+}

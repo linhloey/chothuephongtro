@@ -4,8 +4,7 @@ import { useSelector } from 'react-redux'
 import moment from 'moment'
 import 'moment/locale/vi'
 import Swal from 'sweetalert2'
-import { Button } from '../../components'
-import { formatVNToString } from '../../ultils/common/formatVNToString' // Import cùng hàm với file Item
+import { formatVNToString } from '../../ultils/common/formatVNToString'
 
 const AdminManagePost = () => {
     const [posts, setPosts] = useState(null)
@@ -49,7 +48,6 @@ const AdminManagePost = () => {
         })
     }
 
-    // Kiểm tra quyền Admin
     if (userData.roleCode !== 'R1') {
         return (
             <div className='p-6 text-red-500 font-bold bg-red-50 rounded-md m-4 border border-red-200 text-center text-lg'>
@@ -60,7 +58,6 @@ const AdminManagePost = () => {
 
     return (
         <div className='flex flex-col h-full bg-white p-6'>
-            {/* Header */}
             <div className='flex justify-between items-center border-b pb-4 mb-6'>
                 <h1 className='text-3xl font-bold text-gray-800'>Quản lý tất cả bài đăng</h1>
                 <span className='bg-blue-100 text-blue-800 text-sm font-medium px-4 py-1.5 rounded-full shadow-sm'>
@@ -68,7 +65,6 @@ const AdminManagePost = () => {
                 </span>
             </div>
 
-            {/* Table */}
             <div className='relative overflow-x-auto shadow-lg sm:rounded-lg border border-gray-100'>
                 <table className='w-full text-sm text-left text-gray-500'>
                     <thead className='text-xs text-white uppercase bg-blue-600 sticky top-0'>
@@ -124,12 +120,11 @@ const AdminManagePost = () => {
                                     </td>
                                     <td className='px-6 py-4'>
                                         <div className='flex justify-center gap-4'>
-                                            {/* Nút Xem: Sử dụng formatVNToString để trùng khớp với Link bên ngoài */}
                                             <button 
                                                 className='text-blue-600 hover:text-blue-800 font-bold underline transition-colors'
                                                 onClick={() => {
                                                     const titleSlug = formatVNToString(post.title);
-                                                    window.open(`/chi-tiet/${titleSlug}/${post.id}`, '_blank');
+                                                    window.open(`/chi-tiet/${post.id}`, '_blank');
                                                 }}
                                             >
                                                 Xem

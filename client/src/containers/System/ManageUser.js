@@ -75,12 +75,6 @@ const ManageUser = () => {
                                     </span>
                                 </td>
                                 <td className='px-6 py-4 text-center'>
-                                    <button 
-                                        className='text-blue-600 hover:text-blue-900 font-medium mr-4 underline'
-                                        onClick={() => Swal.fire('Tính năng đang phát triển', '', 'info')}
-                                    >
-                                        Sửa
-                                    </button>
                                     {user.roleCode !== 'R1' && (
                                         <button 
                                             className='text-red-600 hover:text-red-900 font-medium underline'

@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetNewPosts, apiGetPosts, apiGetPostsLimit } from '../../services/post'
+import { apiGetNewPosts, apiGetPosts, apiGetPostsLimit, apiGetSavedPosts } from '../../services/post'
 
 export const getPosts = () => async (dispatch) => {
     try {
@@ -68,6 +68,28 @@ export const getNewPosts = () => async (dispatch) => {
         dispatch({
             type: actionTypes.GET_NEW_POSTS,
             newPosts: null
+        })
+    }
+}
+
+export const getSavedPosts = () => async (dispatch) => {
+    try {
+        const response = await apiGetSavedPosts()
+        if (response?.data.err === 0) {
+            dispatch({
+                type: 'GET_SAVED_POSTS',
+                posts: response.data.response // Dữ liệu từ API của bạn
+            })
+        } else {
+            dispatch({
+                type: 'GET_SAVED_POSTS',
+                posts: []
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: 'GET_SAVED_POSTS',
+            posts: []
         })
     }
 }

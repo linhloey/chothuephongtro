@@ -13,5 +13,8 @@ router.get('/admin-all', verifyToken, isAdmin, postController.getPostsAdmin)
 router.get('/user-all', verifyToken, postController.getPostsUser)
 router.delete('/delete-post', verifyToken, postController.deletePost)
 router.post('/create-new', verifyToken, postController.createNewPost)
+router.post('/save-post', verifyToken, postController.savePost);
+router.get('/get-saved-posts', verifyToken, postController.getSavedPosts);
+router.put('/update', verifyToken, postController.updatePost)
 
 export default router;

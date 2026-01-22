@@ -6,14 +6,13 @@ import L from 'leaflet'
 import axios from 'axios'
 import * as ELG from 'esri-leaflet-geocoder'
 import Swal from 'sweetalert2'
+import { AiOutlineCamera, AiOutlineDelete } from 'react-icons/ai'
 
 import * as actions from '../../store/actions'
 import generateCode from '../../ultils/common/generateCode.js'
-// Đảm bảo file data.js đã được cập nhật các mã như OU1N, 1U2N...
 import { dataPrice, dataArea } from '../../ultils/common/data.js'
 import { apiCreatePost } from '../../services/post'
 
-// Cấu hình Icon cho Bản đồ
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -45,6 +44,8 @@ const CreatePost = () => {
     const [districts, setDistricts] = useState([])
     const [wards, setWards] = useState([])
     const [coords, setCoords] = useState([10.7769, 106.7009])
+    const [isLoading, setIsLoading] = useState(false)
+
     const [payload, setPayload] = useState({
         category: 'Phòng trọ',
         title: '',
@@ -57,11 +58,22 @@ const CreatePost = () => {
         street: '',
         houseNumber: '',
         fullAddress: '',
-        images: ["https://phongtro123.com/images/default.jpg"]
+        images: [],
+        contactName: '', // Tên người liên hệ
+        contactPhone: '' // Số điện thoại liên hệ
     })
 
     useEffect(() => {
-        if (!userData || Object.keys(userData).length === 0) dispatch(actions.getCurrentUser())
+        if (!userData || Object.keys(userData).length === 0) {
+            dispatch(actions.getCurrentUser())
+        } else {
+            // Khi có userData, tự động điền vào thông tin liên hệ làm mặc định
+            setPayload(prev => ({
+                ...prev,
+                contactName: userData.name || '',
+                contactPhone: userData.phone || ''
+            }))
+        }
     }, [dispatch, userData])
 
     useEffect(() => {
@@ -92,15 +104,50 @@ const CreatePost = () => {
         }
     }, [payload.province, payload.district, payload.ward, payload.street, payload.houseNumber])
 
-    const handleSubmit = async () => {
-        const { priceNumber, areaNumber, category, district, province, title, description, fullAddress, images } = payload
+    const handleFiles = async (e) => {
+        e.stopPropagation()
+        setIsLoading(true)
+        const files = e.target.files
+        let images = []
+        
+        for (let file of files) {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('upload_preset', process.env.REACT_APP_UPLOAD_ASSETS_NAME) 
 
-        // 1. Sinh LabelCode (Vẫn dùng generateCode cho Label vì đây là chuỗi biến thiên)
+            try {
+                const response = await axios.post(
+                    `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`, 
+                    formData
+                )
+                if (response.status === 200) {
+                    images.push(response.data?.secure_url)
+                }
+            } catch (error) {
+                console.error('Lỗi khi tải ảnh lên Cloudinary:', error)
+            }
+        }
+        
+        setIsLoading(false)
+        setPayload(prev => ({ 
+            ...prev, 
+            images: [...prev.images, ...images] 
+        }))
+    }
+
+    const handleDeleteImage = (imageLink) => {
+        setPayload(prev => ({
+            ...prev,
+            images: prev.images.filter(item => item !== imageLink)
+        }))
+    }
+
+    const handleSubmit = async () => {
+        const { priceNumber, areaNumber, category, district, province, title, description, fullAddress, images, contactName, contactPhone } = payload
+
         const labelValue = `Cho thuê ${category.toLowerCase()} ${district}`
         const labelCode = generateCode(labelValue)
-        
-        // 2. LẤY MÃ CỐ ĐỊNH TỪ DB (Thông qua file data.js)
-        // Dùng số người dùng nhập để tìm object tương ứng
+
         const priceObj = dataPrice.find(p => priceNumber >= p.min && priceNumber < p.max)
         const areaObj = dataArea.find(a => areaNumber >= a.min && areaNumber < a.max)
 
@@ -111,7 +158,6 @@ const CreatePost = () => {
             categoryCode: categories.find(c => c.name === category)?.code || 'PT',
             priceNumber: priceNumber * 1000000, 
             areaNumber,
-            // Gửi trực tiếp mã từ data.js (Ví dụ: '1U2N' hoặc '2UMD')
             priceCode: priceObj?.code || '',
             areaCode: areaObj?.code || '',
             priceString: priceNumber >= 1 ? `${priceNumber} triệu/tháng` : `${priceNumber * 1000000} đồng/tháng`,
@@ -119,18 +165,22 @@ const CreatePost = () => {
             address: fullAddress,
             description: description,
             userId: userData?.id,
-            images: images,
+            images: images.length > 0 ? images : ["https://phongtro123.com/images/default.jpg"],
             district: district,
-            province: province 
+            province: province,
+            // Gửi thêm thông tin liên hệ tùy chỉnh nếu API hỗ trợ
+            contactName: contactName,
+            contactPhone: contactPhone
         }
 
-        if (!finalBody.title || priceNumber === 0 || areaNumber === 0 || !district) {
-            return Swal.fire('Thiếu thông tin', 'Vui lòng điền đầy đủ tiêu đề, địa chỉ, giá và diện tích', 'warning')
+        if (!finalBody.title || priceNumber === 0 || areaNumber === 0 || !district || !contactName || !contactPhone) {
+            return Swal.fire('Thiếu thông tin', 'Vui lòng điền đầy đủ tiêu đề, địa chỉ, giá, diện tích và thông tin liên hệ', 'warning')
         }
 
         const response = await apiCreatePost(finalBody)
         if (response?.data?.err === 0) {
             Swal.fire('Thành công', 'Đã đăng bài thành công!', 'success')
+            // window.location.reload()
         } else {
             Swal.fire('Lỗi', response?.data?.msg || 'Đăng bài thất bại', 'error')
         }
@@ -142,7 +192,7 @@ const CreatePost = () => {
             
             <div className='flex flex-col lg:flex-row gap-10'>
                 <div className='flex-[2] flex flex-col gap-8'>
-                    {/* Phần 1: Địa chỉ */}
+
                     <section className='bg-gray-50 p-6 rounded-xl border border-gray-200'>
                         <h2 className='text-sm font-bold mb-4 text-gray-700 uppercase'>1. Địa chỉ cho thuê</h2>
                         <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
@@ -185,7 +235,6 @@ const CreatePost = () => {
                         <input className='w-full border p-2 rounded mt-4 bg-gray-100 italic outline-none' value={payload.fullAddress} readOnly />
                     </section>
 
-                    {/* Phần 2: Mô tả */}
                     <section className='bg-gray-50 p-6 rounded-xl border border-gray-200'>
                         <h2 className='text-sm font-bold mb-4 text-gray-700 uppercase'>2. Thông tin mô tả</h2>
                         <div className='mb-4 w-full md:w-1/2'>
@@ -196,32 +245,82 @@ const CreatePost = () => {
                                 ))}
                             </select>
                         </div>
-                        <input placeholder='Tiêu đề bài đăng' className='w-full border p-2 rounded mb-4' value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} />
-                        <textarea placeholder='Nội dung mô tả' className='w-full border p-2 rounded h-32 mb-4' value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} />
+                        <div className='mb-4 w-full'>
+                            <label className='text-xs font-bold uppercase text-gray-500'>Tiêu đề bài đăng</label>
+                            <input placeholder='VD: Cho thuê phòng trọ đầy đủ tiện nghi...' className='w-full border p-2 rounded mb-4' value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} />
+                        </div>
+                        <div className='mb-4 w-full'>
+                            <label className='text-xs font-bold uppercase text-gray-500'>Nội dung mô tả</label>
+                            <textarea placeholder='Mô tả chi tiết về phòng, tiện ích, giờ giấc...' className='w-full border p-2 rounded h-32 mb-4' value={payload.description} onChange={e => setPayload({...payload, description: e.target.value})} />
+                        </div>
                         
                         <div className='grid grid-cols-2 gap-8'>
                             <div className='flex flex-col gap-1'>
-                                <label className='text-xs font-bold'>Giá thuê (Triệu/tháng)</label>
+                                <label className='text-xs font-bold uppercase text-gray-500'>Giá thuê (Triệu/tháng)</label>
                                 <input type="number" step="0.1" placeholder='VD: 1.5' className='w-full border p-2 rounded' value={payload.priceNumber} onChange={e => setPayload({...payload, priceNumber: +e.target.value})} />
                             </div>
                             <div className='flex flex-col gap-1'>
-                                <label className='text-xs font-bold'>Diện tích (m²)</label>
+                                <label className='text-xs font-bold uppercase text-gray-500'>Diện tích (m²)</label>
                                 <input type="number" placeholder='VD: 25' className='w-full border p-2 rounded' value={payload.areaNumber} onChange={e => setPayload({...payload, areaNumber: +e.target.value})} />
                             </div>
                         </div>
                     </section>
 
-                    {/* Phần 3: Liên hệ */}
                     <section className='bg-gray-50 p-6 rounded-xl border border-gray-200'>
-                        <h2 className='text-sm font-bold mb-4 text-gray-700 uppercase'>3. Thông tin liên hệ</h2>
-                        <div className='grid grid-cols-2 gap-8'>
+                        <h2 className='text-sm font-bold mb-4 text-gray-700 uppercase'>3. Hình ảnh</h2>
+                        <div className='w-full'>
+                            <label className='w-full border-2 border-dashed border-gray-300 rounded-lg h-40 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition-all'>
+                                {isLoading ? (
+                                    <div className='flex flex-col items-center'>
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 mb-2"></div>
+                                        <span>Đang tải ảnh lên...</span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <AiOutlineCamera size={40} className="text-gray-400" />
+                                        <span className='text-gray-500 mt-2 font-medium'>Thêm hình ảnh bài đăng (Chọn nhiều ảnh)</span>
+                                    </>
+                                )}
+                                <input hidden type="file" multiple onChange={handleFiles} accept="image/*" />
+                            </label>
+                            
+                            <div className='flex flex-wrap gap-4 mt-4'>
+                                {payload.images.map((item, index) => (
+                                    <div key={index} className='relative w-32 h-32 group'>
+                                        <img src={item} alt="preview" className='w-full h-full object-cover rounded-lg border shadow-sm' />
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleDeleteImage(item)}
+                                            className='absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity'
+                                        >
+                                            <AiOutlineDelete size={16} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className='bg-gray-50 p-6 rounded-xl border border-gray-200'>
+                        <h2 className='text-sm font-bold mb-4 text-gray-700 uppercase'>4. Thông tin liên hệ</h2>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
                             <div className='flex flex-col gap-1'>
-                                <label className='text-xs text-gray-400'>Tên liên hệ</label>
-                                <input className='w-full border p-2 rounded bg-gray-200 outline-none' value={userData?.name || ''} readOnly />
+                                <label className='text-xs font-bold uppercase text-gray-500'>Tên liên hệ</label>
+                                <input 
+                                    className='w-full border p-2 rounded bg-white outline-blue-500' 
+                                    value={payload.contactName} 
+                                    onChange={e => setPayload({...payload, contactName: e.target.value})}
+                                    placeholder="Nhập tên của bạn"
+                                />
                             </div>
                             <div className='flex flex-col gap-1'>
-                                <label className='text-xs text-gray-400'>Số điện thoại</label>
-                                <input className='w-full border p-2 rounded bg-gray-200 outline-none' value={userData?.phone || ''} readOnly />
+                                <label className='text-xs font-bold uppercase text-gray-500'>Số điện thoại</label>
+                                <input 
+                                    className='w-full border p-2 rounded bg-white outline-blue-500' 
+                                    value={payload.contactPhone} 
+                                    onChange={e => setPayload({...payload, contactPhone: e.target.value})}
+                                    placeholder="Nhập số điện thoại"
+                                />
                             </div>
                         </div>
                     </section>
@@ -231,7 +330,6 @@ const CreatePost = () => {
                     </button>
                 </div>
 
-                {/* Bản đồ */}
                 <div className='flex-1 lg:sticky lg:top-4 h-[450px] border-4 border-white shadow-2xl rounded-2xl overflow-hidden'>
                     <MapContainer center={coords} zoom={16} style={{ height: '100%', width: '100%' }}>
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

@@ -13,13 +13,14 @@ export const path = {
     CAN_HO_DICH_VU: 'can-ho-dich-vu',
     O_GHEP: 'o-ghep',
     MAT_BANG: 'mat-bang',
-    DETAIL_POST__TITLE__POSTID: 'chi-tiet/:title/:postId',
+    DETAIL_POST__TITLE__POSTID: 'chi-tiet/:postId',
     THONG_TIN_CA_NHAN: 'thong-tin-ca-nhan',
     SYSTEM: 'he-thong',
     QUAN_LY_NGUOI_DUNG: 'quan-ly-nguoi-dung',
     QUAN_LY_TAT_CA_BAI_DANG: 'quan-ly-tat-ca-bai-dang',
     TAO_MOI_BAI_DANG: 'tao-moi-bai-dang',
-    QUAN_LY_BAI_DANG: 'quan-ly-bai-dang'
+    QUAN_LY_BAI_DANG: 'quan-ly-bai-dang',
+    TIN_DA_LUU: 'tin-da-luu'
 }
 
 export const text = {
